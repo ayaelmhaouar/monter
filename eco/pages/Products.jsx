@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import './Products.css';
 
 const Products = () => {
@@ -40,6 +40,7 @@ const Products = () => {
         }
       ];
 
+      // Filtrer les produits par catégorie
       if (category && category !== 'nouveautes' && category !== 'promotions') {
         const filtered = mockProducts.filter(product => 
           product.category === category
@@ -76,6 +77,7 @@ const Products = () => {
   }
 
   return (
+    // affiche le titre selon la catégori.
     <div className="products-page">
       <h1>
         {category ? `Montres ${category.charAt(0).toUpperCase() + category.slice(1)}` : 'Toutes nos montres'}
@@ -90,12 +92,20 @@ const Products = () => {
             <div className="product-info">
               <h3>{product.name}</h3>
               <p className="price">{product.price} €</p>
-              <button 
-                className="add-to-cart-btn"
-                onClick={() => addToCart(product)}
-              >
-                Ajouter au panier
-              </button>
+              <div className="product-actions">
+                <Link 
+                  to={`/produit/${product.id}`}
+                  className="view-details-btn"
+                >
+                  Voir détails
+                </Link>
+                <button 
+                  className="add-to-cart-btn"
+                  onClick={() => addToCart(product)}
+                >
+                  🛒 Ajouter
+                </button>
+              </div>
             </div>
           </div>
         ))}

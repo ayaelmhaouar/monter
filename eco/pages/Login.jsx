@@ -1,4 +1,4 @@
-// src/pages/Login.jsx
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Auth.css';
@@ -8,7 +8,7 @@ const Login = () => {
     email: '',
     password: ''
   });
-
+// handleChange est appelé pour chaque onChange d’un input
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -21,7 +21,7 @@ const Login = () => {
     // Simulation de connexion
     console.log('Login attempt:', formData);
     
-    // Ici vous intégrerez l'appel API Laravel
+    // intégrerez l'appel API Laravel
     localStorage.setItem('auth_token', 'fake-token');
     localStorage.setItem('user', JSON.stringify({ name: 'Utilisateur', email: formData.email }));
     

@@ -5,10 +5,10 @@ import './Home.css';
 const Home = () => {
   return (
     <div className="home">
-      <section className="hero">
+     <section className="hero full-screen">
         <div className="hero-content">
-          <h1>TimeLux - L'Excellence Horlogère</h1>
-          <p>Découvrez notre collection exclusive de montres de luxe</p>
+          <h1>Découvrez l’élégance du temps</h1>
+          <p>Des montres modernes, classiques et luxueuses pour tous les styles.</p>
           <Link to="/montres" className="cta-button">
             Découvrir la collection
           </Link>

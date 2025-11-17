@@ -1,4 +1,4 @@
-// src/pages/Register.jsx
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Auth.css';
@@ -23,7 +23,7 @@ const Register = () => {
     // Simulation d'inscription
     console.log('Register attempt:', formData);
     
-    // Ici vous intégrerez l'appel API Laravel
+    //  intégrerez l'appel API Laravel
     localStorage.setItem('auth_token', 'fake-token');
     localStorage.setItem('user', JSON.stringify({ name: formData.name, email: formData.email }));
     
