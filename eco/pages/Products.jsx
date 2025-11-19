@@ -1,3 +1,4 @@
+// src/pages/Products.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './Products.css';
@@ -40,7 +41,6 @@ const Products = () => {
         }
       ];
 
-      // Filtrer les produits par catégorie
       if (category && category !== 'nouveautes' && category !== 'promotions') {
         const filtered = mockProducts.filter(product => 
           product.category === category
@@ -70,52 +70,58 @@ const Products = () => {
 
   if (loading) {
     return (
-      <div className="loading">
+      <div className="products-loading">
+        <div className="loading-spinner"></div>
         <p>Chargement des produits...</p>
       </div>
     );
   }
 
   return (
-    // affiche le titre selon la catégori.
     <div className="products-page">
-      <h1>
-        {category ? `Montres ${category.charAt(0).toUpperCase() + category.slice(1)}` : 'Toutes nos montres'}
-      </h1>
-      
-      <div className="products-grid">
-        {products.map(product => (
-          <div key={product.id} className="product-card">
-            <div className="product-image">
-              <div className="image-placeholder">⌚</div>
-            </div>
-            <div className="product-info">
-              <h3>{product.name}</h3>
-              <p className="price">{product.price} €</p>
-              <div className="product-actions">
-                <Link 
-                  to={`/produit/${product.id}`}
-                  className="view-details-btn"
-                >
-                  Voir détails
-                </Link>
-                <button 
-                  className="add-to-cart-btn"
-                  onClick={() => addToCart(product)}
-                >
-                  🛒 Ajouter
-                </button>
+      <div className="products-container">
+        <h1 className="products-title">
+          {category ? `Montres ${category.charAt(0).toUpperCase() + category.slice(1)}` : 'Toutes nos montres'}
+        </h1>
+        
+        <div className="products-grid">
+          {products.map(product => (
+            <div key={product.id} className="product-card">
+              <div className="product-image">
+                <div className="image-placeholder">⌚</div>
+              </div>
+              <div className="product-info">
+                <h3>{product.name}</h3>
+                <p className="price">{product.price} €</p>
+                <div className="product-actions">
+                  <Link 
+                    to={`/produit/${product.id}`}
+                    className="view-details-btn"
+                  >
+                    Voir détails
+                  </Link>
+                  <button 
+                    className="add-to-cart-btn"
+                    onClick={() => addToCart(product)}
+                  >
+                    🛒 Ajouter
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {products.length === 0 && (
-        <div className="no-products">
-          <p>Aucun produit trouvé dans cette catégorie.</p>
+          ))}
         </div>
-      )}
+
+        {products.length === 0 && (
+          <div className="no-products">
+            <h2>Aucun produit trouvé</h2>
+            <p>Il n'y a pas de produits dans cette catégorie pour le moment.</p>
+            <Link to="/montres" className="back-to-products-btn">
+              Voir tous les produits
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

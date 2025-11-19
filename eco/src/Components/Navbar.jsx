@@ -41,7 +41,7 @@ const Navbar = () => {
           <div className="nav-dropdown">
             <span className="nav-link">Montres</span>
             <div className="dropdown-content">
-              <Link to="/montres/homme" onClick={() => setIsMenuOpen(false)}>Homme</Link>
+              <Link to="/Products" onClick={() => setIsMenuOpen(false)}>Homme</Link>
               <Link to="/montres/femme" onClick={() => setIsMenuOpen(false)}>Femme</Link>
               <Link to="/montres/sport" onClick={() => setIsMenuOpen(false)}>Sport</Link>
               <Link to="/montres/luxe" onClick={() => setIsMenuOpen(false)}>Luxe</Link>
