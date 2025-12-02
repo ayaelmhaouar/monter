@@ -1,5 +1,4 @@
 <?php
-// app/Models/OrderItem.php
 
 namespace App\Models;
 
@@ -12,18 +11,9 @@ class OrderItem extends Model
 
     protected $fillable = [
         'order_id',
-        'watch_id',
-        'watch_name',
-        'unit_price',
+        'product_id',
         'quantity',
-        'total_price',
-        'watch_snapshot'
-    ];
-
-    protected $casts = [
-        'unit_price' => 'decimal:2',
-        'total_price' => 'decimal:2',
-        'watch_snapshot' => 'array',
+        'price',
     ];
 
     public function order()
@@ -31,8 +21,8 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function watch()
+    public function product()
     {
-        return $this->belongsTo(Watch::class);
+        return $this->belongsTo(Product::class);
     }
 }
