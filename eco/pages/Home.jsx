@@ -1,105 +1,100 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "./Home.css";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
 const Home = () => {
   return (
-    <div className="home">
-   <section
-  className="hero"
-  style={{
-    backgroundImage: "url('/hero.jpg')",
-  }}
->
-  <div className="hero-content">
-    <h1 className="title-hero">
-      MONTRE
-    </h1>
-    <p>Découvrez l'élégance du temps</p>
-    <p>Des montres modernes, classiques et luxueuses pour tous les styles.</p>
-    <Link to="/montres" className="cta-button">
-      Découvrir la collection
-    </Link>
-  </div>
-</section>
-
-   <section className="about-simple">
-  <div className="about-container">
-    <h2>À propos de </h2>
-    <p>
-      est votre boutique en ligne dédiée aux montres élégantes et de qualité.
-      Que vous cherchiez une montre classique, sportive ou luxueuse, nous avons la pièce parfaite pour vous.
-      Notre mission : vous offrir style et fiabilité à chaque tic-tac.
-    </p>
-    <div className="about-features">
-      <div className="feature-item">
-        <div className="feature-icon">🕐</div>
-        <h3>Précision</h3>
-        <p>Des mouvements suisses de haute précision</p>
-      </div>
-      <div className="feature-item">
-        <div className="feature-icon">💎</div>
-        <h3>Qualité</h3>
-        <p>Matériaux premium et finitions impeccables</p>
-      </div>
-      <div className="feature-item">
-        <div className="feature-icon">🚚</div>
-        <h3>Livraison</h3>
-        <p>Livraison rapide et sécurisée partout</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* --- CATEGORIES --- */}
-      <section className="categories">
-        <h2>Nos Catégories</h2>
-
-        <div className="categories-grid">
-          {/* HOMME */}
-          <Link to="/montres/homme" className="category-card">
-            <div
-              className="category-image"
-              style={{
-                backgroundImage: "url('/homme.jpg')",
-              }}
-            ></div>
-            <h3>Montres Homme</h3>
-          </Link>
-
-          {/* FEMME */}
-          <Link to="/montres/femme" className="category-card">
-            <div
-              className="category-image"
-              style={{
-                backgroundImage: "url('/Famme.jpg')",
-              }}
-            ></div>
-            <h3>Montres Femme</h3>
-          </Link>
-
-          {/* SPORT */}
-          <Link to="/montres/sport" className="category-card">
-            <div
-              className="category-image"
-              style={{
-                backgroundImage: "url(/sport.jpg')",
-              }}
-            ></div>
-            <h3>Montres Sport</h3>
-          </Link>
-        </div>
+    <div>
+      {/* Hero Section */}
+      <section className="bg-dark text-white py-5">
+        <Container>
+          <Row className="align-items-center min-vh-50">
+            <Col md={6}>
+              <h1 className="display-4 fw-bold mb-4">Montres d'Exception</h1>
+              <p className="lead mb-4">
+                Découvrez notre collection exclusive de montres pour homme, femme et sport. 
+                Élégance, précision et style dans chaque modèle.
+              </p>
+              <div className="d-flex flex-wrap gap-3">
+                <Button as={Link} to="/products" variant="primary" size="lg">
+                  Découvrir toute la collection
+                </Button>
+                <Button as={Link} to="/products?category=homme" variant="outline-light" size="lg">
+                  Voir Homme
+                </Button>
+              </div>
+            </Col>
+            <Col md={6} className="text-center">
+              <img 
+                src="https://images.unsplash.com/photo-1547996160-81dfd9c4b1b3?w=600&h=400&fit=crop" 
+                alt="Montre de luxe" 
+                className="img-fluid rounded shadow"
+                style={{ maxHeight: '400px' }}
+              />
+            </Col>
+          </Row>
+        </Container>
       </section>
 
-      {/* --- NEW ARRIVALS --- */}
-      <section className="new-arrivals">
-        <h2>Nouveautés</h2>
-        <div className="products-grid">
-          <div className="product-placeholder">
-            <p>Nouveaux modèles à venir...</p>
-          </div>
-        </div>
-      </section>
+      {/* Catégories */}
+      <Container className="my-5">
+        <Row className="text-center mb-5">
+          <Col>
+            <h2>Nos Collections Exclusives</h2>
+            <p className="text-muted">Choisissez la montre qui vous correspond</p>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md={4} className="mb-4">
+            <Card className="h-100 text-center border-0 shadow-sm">
+              <Card.Body className="p-4">
+                <div className="mb-3" style={{ fontSize: '3rem' }}>👔</div>
+                <Card.Title>Collection Homme</Card.Title>
+                <Card.Text className="text-muted">
+                  Montres élégantes et sophistiquées pour les hommes modernes. 
+                  Design classique et matériaux premium.
+                </Card.Text>
+                <Button as={Link} to="/products?category=homme" variant="outline-primary">
+                  Explorer →
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col md={4} className="mb-4">
+            <Card className="h-100 text-center border-0 shadow-sm">
+              <Card.Body className="p-4">
+                <div className="mb-3" style={{ fontSize: '3rem' }}>👗</div>
+                <Card.Title>Collection Femme</Card.Title>
+                <Card.Text className="text-muted">
+                  Montres raffinées et délicates pour les femmes élégantes. 
+                  Lignes épurées et finitions précieuses.
+                </Card.Text>
+                <Button as={Link} to="/products?category=femme" variant="outline-primary">
+                  Explorer →
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col md={4} className="mb-4">
+            <Card className="h-100 text-center border-0 shadow-sm">
+              <Card.Body className="p-4">
+                <div className="mb-3" style={{ fontSize: '3rem' }}>⚡</div>
+                <Card.Title>Collection Sport</Card.Title>
+                <Card.Text className="text-muted">
+                  Montres robustes et fonctionnelles pour les activités sportives. 
+                  Résistance et performance garanties.
+                </Card.Text>
+                <Button as={Link} to="/products?category=sport" variant="outline-primary">
+                  Explorer →
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 };

@@ -1,129 +1,150 @@
-// src/pages/Products.jsx
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import './Products.css';
+import api from "/src/services/Api";
 
-const Products = () => {
-  const { category } = useParams();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const mockProducts = [
-        {
-          id: 1,
-          name: 'Montre Classique Homme',
-          price: 299.99,
-          image: '/images/montre1.jpg',
-          category: 'homme'
-        },
-        {
-          id: 2,
-          name: 'Montre Élégante Femme',
-          price: 249.99,
-          image: '/images/montre2.jpg',
-          category: 'femme'
-        },
-        {
-          id: 3,
-          name: 'Montre Sport Étanche',
-          price: 199.99,
-          image: '/images/montre3.jpg',
-          category: 'sport'
-        },
-        {
-          id: 4,
-          name: 'Montre Luxe Or',
-          price: 999.99,
-          image: '/images/montre4.jpg',
-          category: 'luxe'
-        }
-      ];
+// Données mockées garanties
+const mockProducts = [
+  {
+    id: 1,
+    name: "Montre Homme Classique",
+    description: "Montre élégante en acier inoxydable avec bracelet en cuir véritable. Parfaite pour les occasions formelles.",
+    price: 299.99,
+    category: "homme",
+    image: "montre-homme-1.jpg",
+    stock: 15,
+    is_active: true
+  },
+  {
+    id: 2,
+    name: "Montre Femme Élégante",
+    description: "Montre délicate avec cadran en nacre et bracelet en acier. Élégance et sophistication.",
+    price: 249.99,
+    category: "femme",
+    image: "montre-femme-1.jpg",
+    stock: 8,
+    is_active: true
+  },
+  {
+    id: 3,
+    name: "Montre Sport Professionnelle",
+    description: "Montre sportive étanche avec chronographe et monitoring cardiaque. Idéale pour les activités intenses.",
+    price: 399.99,
+    category: "sport",
+    image: "montre-sport-1.jpg",
+    stock: 20,
+    is_active: true
+  },
+  {
+    id: 4,
+    name: "Montre Homme Vintage",
+    description: "Style rétro avec cadran noir et chiffres arabes. Pour les amateurs de design classique.",
+    price: 349.99,
+    category: "homme",
+    image: "montre-homme-2.jpg",
+    stock: 5,
+    is_active: true
+  },
+  {
+    id: 5,
+    name: "Montre Femme Sport",
+    description: "Montre sportive pour femme, légère et résistante. Parfaite pour les activités quotidiennes.",
+    price: 179.99,
+    category: "femme",
+    image: "montre-femme-2.jpg",
+    stock: 12,
+    is_active: true
+  },
+  {
+    id: 6,
+    name: "Montre Sport Aventure",
+    description: "Montre d'aventure avec altimètre, baromètre et boussole. Conçue pour les explorateurs.",
+    price: 279.99,
+    category: "sport",
+    image: "montre-sport-2.jpg",
+    stock: 10,
+    is_active: true
+  }
+];
 
-      if (category && category !== 'nouveautes' && category !== 'promotions') {
-        const filtered = mockProducts.filter(product => 
-          product.category === category
-        );
-        setProducts(filtered);
-      } else {
-        setProducts(mockProducts);
+export const productService = {
+  getAll: async () => {
+    try {
+      console.log('🔄 Tentative de connexion à l\'API...');
+      const response = await api.get('/products');
+      
+      console.log('✅ API répond:', response.status);
+      console.log('📋 Structure réponse:', response.data);
+      
+      // Gestion de différentes structures de réponse
+      let productsData = [];
+      
+      if (response.data && response.data.data) {
+        productsData = response.data.data;
+      } else if (response.data && Array.isArray(response.data)) {
+        productsData = response.data;
+      } else if (response.data) {
+        productsData = [response.data];
       }
       
-      setLoading(false);
-    }, 1000);
-  }, [category]);
-
-  const addToCart = (product) => {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cart.find(item => item.id === product.id);
-    
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({ ...product, quantity: 1 });
+      console.log('🎯 Produits extraits:', productsData.length);
+      
+      if (productsData.length > 0) {
+        return {
+          success: true,
+          data: productsData
+        };
+      } else {
+        console.log('⚠️ API retourne 0 produits, utilisation des données mockées');
+        return {
+          success: true,
+          data: mockProducts
+        };
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur API, utilisation des données mockées:', error.message);
+      return {
+        success: true, // On retourne true pour pouvoir afficher les mockées
+        data: mockProducts,
+        message: 'Utilisation de données de démonstration'
+      };
     }
-    
-    localStorage.setItem('cart', JSON.stringify(cart));
-    alert('Produit ajouté au panier !');
-  };
+  },
 
-  if (loading) {
-    return (
-      <div className="products-loading">
-        <div className="loading-spinner"></div>
-        <p>Chargement des produits...</p>
-      </div>
-    );
+  getById: async (id) => {
+    try {
+      const response = await api.get(`/products/${id}`);
+      return {
+        success: true,
+        data: response.data.data || response.data
+      };
+    } catch (error) {
+      // Fallback aux données mockées
+      const product = mockProducts.find(p => p.id === parseInt(id));
+      if (product) {
+        return { success: true, data: product };
+      }
+      return {
+        success: false,
+        error: 'Produit non trouvé'
+      };
+    }
+  },
+
+  getByCategory: async (category) => {
+    try {
+      const response = await api.get(`/products/category/${category}`);
+      return {
+        success: true,
+        data: response.data.data || response.data
+      };
+    } catch (error) {
+      // Fallback aux données mockées
+      const products = mockProducts.filter(p => p.category === category);
+      return {
+        success: true,
+        data: products
+      };
+    }
   }
-
-  return (
-    <div className="products-page">
-      <div className="products-container">
-        <h1 className="products-title">
-          {category ? `Montres ${category.charAt(0).toUpperCase() + category.slice(1)}` : 'Toutes nos montres'}
-        </h1>
-        
-        <div className="products-grid">
-          {products.map(product => (
-            <div key={product.id} className="product-card">
-              <div className="product-image">
-                <div className="image-placeholder">⌚</div>
-              </div>
-              <div className="product-info">
-                <h3>{product.name}</h3>
-                <p className="price">{product.price} €</p>
-                <div className="product-actions">
-                  <Link 
-                    to={`/produit/${product.id}`}
-                    className="view-details-btn"
-                  >
-                    Voir détails
-                  </Link>
-                  <button 
-                    className="add-to-cart-btn"
-                    onClick={() => addToCart(product)}
-                  >
-                    🛒 Ajouter
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {products.length === 0 && (
-          <div className="no-products">
-            <h2>Aucun produit trouvé</h2>
-            <p>Il n'y a pas de produits dans cette catégorie pour le moment.</p>
-            <Link to="/montres" className="back-to-products-btn">
-              Voir tous les produits
-            </Link>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default Products;
+}; 
+export default productService;
