@@ -6,12 +6,13 @@ import { CartProvider } from '../context/CartContext';
 
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import Contact from '/components/contact/Contact';
+import Contact from '../components/contact/Contact';
 
 import Home from '/pages/Home';
-import Products from '/pages/Products';
-import Login from '/components/auth/Login';
-// import Register from '../components/auth/Register';
+import  Products from '/pages/Products';
+import Register from '/pages/Register';
+import Login from '/pages/Login';
+
 import Cart from '../components/cart/Cart';
 import Checkout from '../components/orders/Checkout';
 
@@ -42,6 +43,7 @@ function App() {
               <Routes>
 
                 {/* Public Routes */}
+                 <Route path="/register" element={<Register />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/login" element={<Login />} />

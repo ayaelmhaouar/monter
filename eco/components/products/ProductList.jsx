@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { productService } from '../../services/products';
+import { productService } from '/src/services/Products';
 import ProductCard from "./ProductCard";
 import { Container, Row, Col, Form, Spinner, Alert, InputGroup, Button, Card } from 'react-bootstrap';
 
