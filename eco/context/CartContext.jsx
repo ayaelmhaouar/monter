@@ -1,82 +1,92 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+// CartContext.jsx - UPDATED VERSION
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const CartContext = createContext();
+const CartContext = createContext({});
 
-export const useCart = () => {
-  return useContext(CartContext);
-};
+export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
 
-  // Charger le panier depuis le localStorage au démarrage
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
+    const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    setCart(savedCart);
+    setCartCount(savedCart.reduce((total, item) => total + item.quantity, 0));
   }, []);
 
-  // Sauvegarder le panier dans le localStorage à chaque changement
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
-
-  const addToCart = (product, quantity = 1) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === product.id);
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      } else {
-        return [...prevCart, { ...product, quantity }];
-      }
-    });
+  const updateCart = (newCart) => {
+    setCart(newCart);
+    localStorage.setItem('cart', JSON.stringify(newCart));
+    const newCount = newCart.reduce((total, item) => total + item.quantity, 0);
+    setCartCount(newCount);
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
-  const updateQuantity = (productId, quantity) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
+  const addToCart = (product, quantity = 1) => {
+    const existingItem = cart.find(item => item.id === product.id);
+    
+    if (existingItem) {
+      const updatedCart = cart.map(item =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + quantity }
+          : item
+      );
+      updateCart(updatedCart);
+    } else {
+      const updatedCart = [...cart, {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images?.[0]?.url || product.image,
+        brand: product.brand?.name || product.brand,
+        quantity
+      }];
+      updateCart(updatedCart);
     }
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    );
   };
 
   const removeFromCart = (productId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId));
+    const updatedCart = cart.filter(item => item.id !== productId);
+    updateCart(updatedCart);
+  };
+
+  const updateQuantity = (productId, quantity) => {
+    if (quantity < 1) {
+      removeFromCart(productId);
+      return;
+    }
+    
+    const updatedCart = cart.map(item =>
+      item.id === productId ? { ...item, quantity } : item
+    );
+    updateCart(updatedCart);
   };
 
   const clearCart = () => {
-    setCart([]);
+    updateCart([]);
   };
 
   const getCartTotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  // ADD THIS FUNCTION - This is what's missing!
   const getCartItemsCount = () => {
-    return cart.reduce((count, item) => count + item.quantity, 0);
-  };
-
-  const value = {
-    cart,
-    addToCart,
-    updateQuantity,
-    removeFromCart,
-    clearCart,
-    getCartTotal,
-    getCartItemsCount
+    return cartCount; // or: return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider value={{
+      cart,
+      cartCount,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      getCartTotal,
+      getCartItemsCount // MAKE SURE THIS IS INCLUDED HERE!
+    }}>
       {children}
     </CartContext.Provider>
   );

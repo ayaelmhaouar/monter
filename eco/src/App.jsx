@@ -8,15 +8,19 @@ import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import Contact from '../components/contact/Contact';
 
-import Home from '/pages/Home';
-import  Products from '/pages/Products';
-import Register from '/pages/Register';
-import Login from '/pages/Login';
+import Home from '../pages/Home';
+import Products from '../pages/Products';
+import Register from '../pages/Register';
+import Login from '../pages/Login';
+import ProductDetail from '../pages/ProductDetail';
+
 
 import Cart from '../components/cart/Cart';
 import Checkout from '../components/orders/Checkout';
 
-// import OrderHistory from '../components/orders/OrderHistory';
+
+
+import ProductList from '../components/products/ProductList';
 
 
 // Admin Components
@@ -43,10 +47,13 @@ function App() {
               <Routes>
 
                 {/* Public Routes */}
-                 <Route path="/register" element={<Register />} />
+                 
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<Products />} />
+               <Route path="/montres/:category" element={<Products />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/contact" element={<Contact />} />

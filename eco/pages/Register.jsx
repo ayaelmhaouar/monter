@@ -1,48 +1,46 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import { Form, Button, Card, Alert, Container, Row, Col } from 'react-bootstrap';
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
+import { Form, Button, Card, Alert, Container, Row, Col } from "react-bootstrap";
 
-const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: ''
-  });
-  const [error, setError] = useState('');
+export default function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    setError('');
 
-    if (formData.password !== formData.password_confirmation) {
-      setError('Les mots de passe ne correspondent pas');
+    if (password !== passwordConfirmation) {
+      setError("Les mots de passe ne correspondent pas");
       setLoading(false);
       return;
     }
 
-    const result = await register(formData);
+    const result = await register({
+      name,
+      email,
+      password,
+      password_confirmation: passwordConfirmation
+    });
 
     if (result.success) {
-      navigate('/');
+      navigate("/");
     } else {
       setError(result.error);
     }
+
     setLoading(false);
-  };
+  }
 
   return (
     <Container className="mt-5">
@@ -51,17 +49,18 @@ const Register = () => {
           <Card>
             <Card.Body>
               <h2 className="text-center mb-4">Inscription</h2>
+{/* Si error n’est pas vide → afficher un message rouge. */}
               {error && <Alert variant="danger">{error}</Alert>}
-              
+
               <Form onSubmit={handleSubmit}>
+
                 <Form.Group className="mb-3">
                   <Form.Label>Nom complet</Form.Label>
                   <Form.Control
                     type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
                     required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Entrez votre nom"
                   />
                 </Form.Group>
@@ -70,10 +69,9 @@ const Register = () => {
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Entrez votre email"
                   />
                 </Form.Group>
@@ -82,45 +80,55 @@ const Register = () => {
                   <Form.Label>Mot de passe</Form.Label>
                   <Form.Control
                     type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Entrez votre mot de passe"
                   />
                 </Form.Group>
+
+                {password.length > 0 && password.length < 4 && (
+                  <Alert variant="warning" className="py-1">
+                    Le mot de passe doit contenir au moins 4 caractères
+                  </Alert>
+                )}
 
                 <Form.Group className="mb-3">
                   <Form.Label>Confirmation du mot de passe</Form.Label>
                   <Form.Control
                     type="password"
-                    name="password_confirmation"
-                    value={formData.password_confirmation}
-                    onChange={handleChange}
                     required
+                    value={passwordConfirmation}
+                    onChange={(e) => setPasswordConfirmation(e.target.value)}
                     placeholder="Confirmez votre mot de passe"
                   />
                 </Form.Group>
 
-                <Button 
-                  variant="primary" 
-                  type="submit" 
-                  className="w-100" 
+                {passwordConfirmation.length > 0 &&
+                  password !== passwordConfirmation && (
+                    <Alert variant="warning" className="py-1">
+                      La confirmation ne correspond pas
+                    </Alert>
+                )}
+
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100"
                   disabled={loading}
                 >
-                  {loading ? 'Inscription...' : 'S\'inscrire'}
+                  {loading ? "Inscription..." : "S'inscrire"}
                 </Button>
               </Form>
 
               <div className="text-center mt-3">
                 <Link to="/login">Déjà un compte ? Se connecter</Link>
               </div>
+
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </Container>
   );
-};
-
-export default Register;
+}

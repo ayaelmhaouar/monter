@@ -6,7 +6,7 @@ import { Navbar, Nav, Container, Badge } from 'react-bootstrap';
 
 const NavigationBar = () => {
   const { user, logout } = useAuth();
-  const { getCartItemsCount } = useCart();
+  const { cartCount } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -32,9 +32,9 @@ const NavigationBar = () => {
           <Nav>
             <Nav.Link as={Link} to="/cart" className="position-relative">
               🛒 Panier
-              {getCartItemsCount() > 0 && (
+              {cartCount > 0 && (
                 <Badge bg="danger" className="position-absolute top-0 start-100 translate-middle">
-                  {getCartItemsCount()}
+                  {cartCount}
                 </Badge>
               )}
             </Nav.Link>

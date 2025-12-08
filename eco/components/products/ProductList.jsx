@@ -1,368 +1,287 @@
+// src/pages/ProductListSimple.jsx
 import React, { useState, useEffect } from 'react';
-import { productService } from '/src/services/Products';
-import ProductCard from "./ProductCard";
-import { Container, Row, Col, Form, Spinner, Alert, InputGroup, Button, Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [category, setCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-  const [showDebug, setShowDebug] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('tous');
+  const [showProducts, setShowProducts] = useState([]);
 
-  useEffect(() => {
-    loadProducts();
-  }, []);
-
-  useEffect(() => {
-    filterAndSortProducts();
-  }, [products, category, searchTerm, sortBy]);
-
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      
-      console.log('🔄 Début du chargement des produits...');
-      const response = await productService.getAll();
-      
-      console.log('📦 Réponse du service:', response);
-      
-      if (response.success && response.data) {
-        console.log(`✅ ${response.data.length} produits chargés`);
-        setProducts(response.data);
-        
-        // Afficher les produits dans la console pour debug
-        response.data.forEach((product, index) => {
-          console.log(`📝 Produit ${index + 1}:`, {
-            id: product.id,
-            name: product.name,
-            category: product.category,
-            image: product.image,
-            price: product.price,
-            stock: product.stock
-          });
-        });
-      } else {
-        console.warn('⚠️ Réponse sans données:', response);
-        setError(response.error || 'Aucune donnée reçue');
-        // Charger les données mockées par sécurité
-        setProducts([
-          {
-            id: 1,
-            name: "Montre Homme Classique",
-            description: "Montre élégante pour homme",
-            price: 299.99,
-            category: "homme",
-            stock: 10
-          }
-        ]);
-      }
-    } catch (err) {
-      console.error('❌ Erreur critique:', err);
-      setError('Erreur de connexion au serveur');
-      // Données minimales pour éviter l'écran vide
-      setProducts([
-        {
-          id: 999,
-          name: "Montre de démonstration",
-          description: "Ceci est une démonstration - vos produits apparaîtront ici",
-          price: 99.99,
-          category: "homme",
-          stock: 5
-        }
-      ]);
-    } finally {
-      setLoading(false);
+  // Données de produits
+  const allProducts = [
+    {
+      id: 1,name: "Montre Classique Homme",  price: 299.99, image: "/public/f.jpg", category: "femme",brand: "TimeLux"
+    },
+    {
+      id: 2,name: "Montre Élégante Femme",price: 249.99, image: "/public/men.jpg", category: "homme", brand: "Elegance"
+    },
+    {
+      id: 3,name: "Montre Sport Étanche",price: 199.99, image: "/public/s.jpg",category: "sport",brand: "AquaSport"
+    },
+    {
+      id: 4, name: "Montre de Luxe Or",price: 8999.99,image: "/public/feem.jpg",  category: "homme",brand: "Rolex"
+    },
+    {
+      id: 5,name: "Smartwatch Connectée", price: 399.99, image: "/public/sp.jpg",category: "sport",brand: "TimeLux"
+    },
+    {
+      id: 6,  name: "Montre Business", price: 389.99,  image: "/public/w.jpg",category: "homme", brand: "Executive"
+    },
+    {
+      id: 7, name: "Montre Rose Or Femme", price: 349.99,image: "/public/hom.jpg",category: "femme", brand: "RoseGold"
+    },
+    {
+      id: 8, name: "Chronographe Running",price: 289.99,   image: "/public/sportt.jpg", category: "sport",brand: "RunPro"
+    },
+    {
+      id: 9, name: "Montre Vintage Homme", price: 459.99, image: "/public/h1.jpg",category: "homme",brand: "VintageCo"
+    },
+    {
+      id: 10, name: "Montre Diamant Femme", price: 1299.99, image: "/public/f1.jpg", category: "femme",brand: "Diamond"
+    },
+    {
+      id: 11,name: "Montre Fitness GPS",price: 229.99,image: "/public/s1.jpg",category: "sport",brand: "FitTech"
+    },
+    {
+      id: 12,  name: "Montre Cuir Homme",  price: 179.99, image: "/public/.jpg",category: "homme",brand: "LeatherStyle"
     }
+  ];
+
+  // Images de catégories
+  const categoryImages = {
+    homme: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    femme: "https://images.unsplash.com/photo-1547996160-81dfd7f8c0e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    sport: "https://images.unsplash.com/photo-1539874754764-5a96559165b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   };
 
-  const filterAndSortProducts = () => {
-    let filtered = [...products];
+  useEffect(() => {
+    filterProducts();
+  }, [selectedCategory, searchTerm]);
 
-    // Filtrage par catégorie
-    if (category) {
-      filtered = filtered.filter(product => 
-        product.category === category
-      );
+  const filterProducts = () => {
+    let filtered = [...allProducts];
+
+    // Filtre par catégorie
+    if (selectedCategory !== 'tous') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
-    // Filtrage par recherche
+    // Filtre par recherche
     if (searchTerm) {
       filtered = filtered.filter(product =>
-        product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category?.toLowerCase().includes(searchTerm.toLowerCase())
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.brand.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Tri des produits
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'price-asc':
-          return (a.price || 0) - (b.price || 0);
-        case 'price-desc':
-          return (b.price || 0) - (a.price || 0);
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '');
-        case 'stock':
-          return (b.stock || 0) - (a.stock || 0);
-        default:
-          return 0;
-      }
-    });
+    setShowProducts(filtered);
+  };
 
-    setFilteredProducts(filtered);
+  const addToCart = (product) => {
+    // Récupérer le panier existant
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    // Vérifier si le produit existe déjà
+    const existingProduct = cart.find(item => item.id === product.id);
+    
+    if (existingProduct) {
+      existingProduct.quantity += 1;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        brand: product.brand,
+        quantity: 1
+      });
+    }
+    
+    // Sauvegarder dans localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Afficher une notification
+    alert(`${product.name} a été ajouté au panier !`);
   };
 
   const clearFilters = () => {
-    setCategory('');
     setSearchTerm('');
-    setSortBy('name');
+    setSelectedCategory('tous');
   };
 
-  // Si chargement
-  if (loading) {
-    return (
-      <Container className="my-5 py-5">
-        <Row className="justify-content-center">
-          <Col md={6} className="text-center">
-            <Spinner animation="border" variant="primary" />
-            <h4 className="mt-3">Chargement de notre collection...</h4>
-            <p className="text-muted">
-              Veuillez patienter pendant que nous préparons les meilleures montres pour vous.
-            </p>
-            <Button 
-              variant="outline-primary" 
-              onClick={loadProducts}
-              className="mt-3"
-            >
-              Rafraîchir
-            </Button>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-
   return (
-    <Container className="my-5">
-      {/* Debug panel (optionnel) */}
-      {showDebug && (
-        <Card className="mb-4 bg-light">
-          <Card.Body>
-            <Button 
-              size="sm" 
-              variant="outline-secondary" 
-              onClick={() => setShowDebug(false)}
-              className="float-end"
-            >
-              Cacher
-            </Button>
-            <h6>🔧 Debug Info</h6>
-            <pre style={{ fontSize: '0.8rem' }}>
-              {JSON.stringify({
-                totalProducts: products.length,
-                filteredProducts: filteredProducts.length,
-                category,
-                searchTerm,
-                sortBy,
-                productsSample: products.slice(0, 2)
-              }, null, 2)}
-            </pre>
-          </Card.Body>
-        </Card>
-      )}
-
-      {/* En-tête */}
-      <Row className="mb-5">
-        <Col className="text-center">
-          <h1 className="display-5 fw-bold mb-3">Notre Collection de Montres</h1>
-          <p className="lead text-muted mb-4">
-            Découvrez notre sélection exclusive de montres raffinées
-          </p>
-        </Col>
-      </Row>
-
-      {/* Filtres */}
-      <Row className="mb-4 g-3">
-        <Col md={4}>
-          <InputGroup>
-            <InputGroup.Text>🔍</InputGroup.Text>
-            <Form.Control
-              type="text"
-              placeholder="Rechercher une montre..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </InputGroup>
-        </Col>
-        
-        <Col md={3}>
-          <Form.Select 
-            value={category} 
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Toutes les collections</option>
-            <option value="homme">👔 Homme</option>
-            <option value="femme">👗 Femme</option>
-            <option value="sport">⚡ Sport</option>
-          </Form.Select>
-        </Col>
-
-        <Col md={3}>
-          <Form.Select 
-            value={sortBy} 
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="name">Trier par nom</option>
-            <option value="price-asc">Prix croissant</option>
-            <option value="price-desc">Prix décroissant</option>
-            <option value="stock">Disponibilité</option>
-          </Form.Select>
-        </Col>
-
-        <Col md={2}>
-          <div className="d-flex gap-2">
-            <Button 
-              variant="outline-secondary" 
-              onClick={clearFilters}
-              className="w-50"
-            >
-              🔄
-            </Button>
-            <Button 
-              variant="outline-info" 
-              onClick={() => setShowDebug(!showDebug)}
-              className="w-50"
-            >
-              {showDebug ? '🔧' : '🐛'}
-            </Button>
-          </div>
-        </Col>
-      </Row>
-
-      {/* Messages d'erreur */}
-      {error && (
-        <Alert variant="warning" className="mb-4">
-          <Alert.Heading>Information</Alert.Heading>
-          <p>{error}</p>
-          <div className="d-flex justify-content-between">
-            <Button 
-              variant="outline-warning" 
-              size="sm"
-              onClick={loadProducts}
-            >
-              Réessayer
-            </Button>
-            <Button 
-              variant="outline-info" 
-              size="sm"
-              onClick={() => window.open('http://localhost:8000/api/products', '_blank')}
-            >
-              Tester l'API
-            </Button>
-          </div>
-        </Alert>
-      )}
-
-      {/* Résultats */}
-      <Row className="mb-4">
-        <Col>
-          <div className="d-flex justify-content-between align-items-center">
-            <p className="text-muted mb-0">
-              <strong>{filteredProducts.length}</strong> produit{filteredProducts.length > 1 ? 's' : ''} trouvé{filteredProducts.length > 1 ? 's' : ''}
-              {category && ` dans la catégorie "${category}"`}
-              {searchTerm && ` pour "${searchTerm}"`}
-            </p>
-            
-            {products.length === 0 && (
-              <Button 
-                variant="primary" 
-                size="sm"
-                onClick={loadProducts}
-              >
-                🔄 Charger les produits
-              </Button>
-            )}
-          </div>
-        </Col>
-      </Row>
-
-      {/* Affichage des produits */}
-      {filteredProducts.length > 0 ? (
-        <Row>
-          {filteredProducts.map(product => (
-            <Col key={product.id} xs={12} sm={6} md={4} lg={3} className="mb-4">
-              <ProductCard product={product} />
-            </Col>
-          ))}
-        </Row>
-      ) : (
-        <div className="text-center py-5">
-          <div style={{ fontSize: '5rem' }}>🔍</div>
-          <h3 className="mt-3">Aucun produit trouvé</h3>
-          
-          {products.length === 0 ? (
-            <>
-              <p className="text-muted mb-4">
-                La base de données semble vide ou inaccessible.
-              </p>
-              <div className="d-flex justify-content-center gap-3">
-                <Button 
-                  variant="primary"
-                  onClick={loadProducts}
-                >
-                  Rafraîchir la page
-                </Button>
-                <Button 
-                  variant="outline-secondary"
-                  onClick={() => {
-                    // Ajouter un produit test localement
-                    setProducts([{
-                      id: Date.now(),
-                      name: "Montre Test",
-                      description: "Ceci est un produit de test",
-                      price: 99.99,
-                      category: "homme",
-                      stock: 1
-                    }]);
-                  }}
-                >
-                  Afficher un produit test
-                </Button>
+    <div className="container-fluid px-0">
+      {/* Barre de recherche */}
+      <div className="bg-light py-3 shadow-sm">
+        <div className="container">
+          <div className="row align-items-center">
+            <div className="col-md-4 mb-2 mb-md-0">
+              <h1 className="h3 mb-0">Collection de Montres</h1>
+            </div>
+            <div className="col-md-8">
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Rechercher une montre..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="btn btn-outline-secondary" onClick={clearFilters}>
+                  <i className="bi bi-x-circle"></i>
+                </button>
               </div>
-            </>
-          ) : (
-            <>
-              <p className="text-muted mb-4">
-                Aucun produit ne correspond à vos critères de recherche.
-              </p>
-              <Button 
-                variant="outline-primary"
-                onClick={clearFilters}
-              >
-                Voir toute la collection ({products.length})
-              </Button>
-            </>
-          )}
-          
-          {/* Conseils de dépannage */}
-          <div className="mt-5 text-start">
-            <h6>🛠️ Conseils de dépannage :</h6>
-            <ul className="text-muted">
-              <li>Vérifiez que votre serveur Laravel est démarré : <code>php artisan serve</code></li>
-              <li>Testez l'API directement : <a href="http://localhost:8000/api/products" target="_blank">http://localhost:8000/api/products</a></li>
-              <li>Vérifiez la console du navigateur pour les erreurs (F12)</li>
-              <li>Assurez-vous que la table 'products' contient des données</li>
-            </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Boutons de catégories */}
+      <div className="container py-3">
+        <div className="row g-2">
+          <div className="col-6 col-md-3">
+            <button 
+              className={`btn w-100 ${selectedCategory === 'tous' ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setSelectedCategory('tous')}
+            >
+              <i className="bi bi-grid me-2"></i>
+              Tous
+            </button>
+          </div>
+          <div className="col-6 col-md-3">
+            <button 
+              className={`btn w-100 ${selectedCategory === 'homme' ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setSelectedCategory('homme')}
+            >
+              <i className="bi bi-person me-2"></i>
+              Homme
+            </button>
+          </div>
+          <div className="col-6 col-md-3">
+            <button 
+              className={`btn w-100 ${selectedCategory === 'femme' ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setSelectedCategory('femme')}
+            >
+              <i className="bi bi-person-heart me-2"></i>
+              Femme
+            </button>
+          </div>
+          <div className="col-6 col-md-3">
+            <button 
+              className={`btn w-100 ${selectedCategory === 'sport' ? 'btn-primary' : 'btn-outline-primary'}`}
+              onClick={() => setSelectedCategory('sport')}
+            >
+              <i className="bi bi-activity me-2"></i>
+              Sport
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Image de catégorie */}
+      {selectedCategory !== 'tous' && categoryImages[selectedCategory] && (
+        <div className="container mb-4">
+          <div className="card border-0 shadow">
+            <img 
+              src={categoryImages[selectedCategory]} 
+              className="card-img rounded" 
+              alt={`Montres ${selectedCategory}`}
+              style={{ height: '300px', objectFit: 'cover' }}
+            />
+            <div className="card-img-overlay d-flex align-items-center justify-content-center">
+              <div className="text-center text-white bg-dark bg-opacity-50 p-4 rounded">
+                <h2 className="display-5 mb-2">Montres {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}</h2>
+                <p className="lead">{showProducts.length} modèles disponibles</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
-    </Container>
+
+      {/* Affichage des produits */}
+      <div className="container">
+        {showProducts.length > 0 ? (
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {showProducts.map(product => (
+              <div key={product.id} className="col">
+                <div className="card h-100 border-0 shadow-sm">
+                  <div className="position-relative" style={{ height: '200px', overflow: 'hidden' }}>
+                    <img 
+                      src={product.image} 
+                      className="card-img-top h-100 w-100 object-fit-cover" 
+                      alt={product.name}
+                    />
+                    <span className="position-absolute top-0 start-0 bg-primary text-white px-2 py-1 small">
+                      {product.brand}
+                    </span>
+                  </div>
+                  <div className="card-body">
+                    <h5 className="card-title">{product.name}</h5>
+                    <p className="card-text">
+                      <strong className="text-primary fs-4">{product.price.toFixed(2)} €</strong>
+                    </p>
+                  </div>
+                  <div className="card-footer bg-white border-0">
+                    <div className="d-grid gap-2">
+                      <Link 
+                        to={`/product/${product.id}`} 
+                        className="btn btn-outline-primary"
+                      >
+                        <i className="bi bi-eye me-1"></i> Voir détails
+                      </Link>
+                      <button 
+                        className="btn btn-primary"
+                        onClick={() => addToCart(product)}
+                      >
+                        <i className="bi bi-cart-plus me-1"></i> Ajouter au panier
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-5">
+            <i className="bi bi-search display-1 text-muted"></i>
+            <h3 className="mt-3">Aucun produit trouvé</h3>
+            <p className="text-muted">Essayez une autre recherche ou catégorie</p>
+            <button className="btn btn-primary" onClick={clearFilters}>
+              Voir toute la collection
+            </button>
+          </div>
+        )}
+
+        {/* Statistiques */}
+        <div className="mt-5 pt-4 border-top">
+          <div className="row text-center">
+            <div className="col-md-4 mb-3">
+              <div className="p-3 bg-light rounded">
+                <i className="bi bi-truck display-6 text-primary mb-3"></i>
+                <h5>Livraison Gratuite</h5>
+                <p className="text-muted mb-0">À partir de 100€ d'achat</p>
+              </div>
+            </div>
+            <div className="col-md-4 mb-3">
+              <div className="p-3 bg-light rounded">
+                <i className="bi bi-shield-check display-6 text-primary mb-3"></i>
+                <h5>Garantie 2 ans</h5>
+                <p className="text-muted mb-0">Sur tous nos produits</p>
+              </div>
+            </div>
+            <div className="col-md-4 mb-3">
+              <div className="p-3 bg-light rounded">
+                <i className="bi bi-arrow-counterclockwise display-6 text-primary mb-3"></i>
+                <h5>Retour Gratuit</h5>
+                <p className="text-muted mb-0">Sous 30 jours</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+    </div>
   );
 };
 

@@ -4,28 +4,40 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        return $next($request);
-         // Si vous avez une relation roles
-        if (auth()->check() && auth()->user()->roles->contains('name', 'admin')) {
-            return $next($request);
+        // Check if user is authenticated
+        if (!auth()->check()) {
+            return response()->json([
+                'message' => 'Non authentifié',
+                'error' => 'Authentication required'
+            ], 401);
         }
-
-        // Ou si vous avez une colonne role
-        // if (auth()->check() && auth()->user()->role === 'admin') {
-        //     return $next($request);
+        
+        // Check if user has admin role
+        // Assuming your User model has a 'role' column or isAdmin() method
+        $user = auth()->user();
+        
+        // Method 1: Check role column
+        if ($user->role !== 'admin') {
+            return response()->json([
+                'message' => 'Accès non autorisé',
+                'required_role' => 'admin',
+                'current_role' => $user->role
+            ], 403);
+        }
+        
+        // Method 2: If using isAdmin() method
+        // if (!$user->isAdmin()) {
+        //     return response()->json([
+        //         'message' => 'Accès non autorisé',
+        //         'required_role' => 'admin'
+        //     ], 403);
         // }
-
-        abort(403, 'Accès non autorisé');
+        
+        return $next($request);
     }
-    }
+}

@@ -4,20 +4,27 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOrdersTable extends Migration
+return new class extends Migration
 {
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->decimal('total_amount', 10, 2);
-            $table->enum('status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled']);
-            $table->string('shipping_address');
-            $table->string('billing_address');
-            $table->string('payment_method');
-            $table->string('payment_status');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->decimal('total', 10, 2);
+            $table->string('status')->default('pending');
+            $table->text('shipping_address')->nullable();
+            $table->text('billing_address')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email');
+            $table->string('full_name');
+            $table->text('notes')->nullable();
             $table->timestamps();
+            
+            // Indexes
+            $table->index('user_id');
+            $table->index('status');
+            $table->index('created_at');
         });
     }
 
@@ -25,4 +32,4 @@ class CreateOrdersTable extends Migration
     {
         Schema::dropIfExists('orders');
     }
-}
+};

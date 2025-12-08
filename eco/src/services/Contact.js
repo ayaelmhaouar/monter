@@ -1,4 +1,4 @@
-import api from './api';
+import api from '/src/services/Api';
 
 export const contactService = {
   // Envoyer un message de contact

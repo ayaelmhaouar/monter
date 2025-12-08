@@ -8,18 +8,20 @@ return new class extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('payments')) {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('order_id'); // Pas de foreign key ici
             $table->decimal('amount', 10, 2);
-            $table->string('payment_method'); // card, stripe, paypal, etc.
-            $table->string('status'); // pending, completed, failed, refunded
+            $table->string('status')->default('pending');
+            $table->string('payment_method');
             $table->string('transaction_id')->nullable();
-            $table->string('payment_gateway')->nullable(); // stripe, paypal, etc.
-            $table->json('payment_details')->nullable(); // Stocker les détails de la transaction
-            $table->timestamp('paid_at')->nullable();
+            $table->json('details')->nullable();
             $table->timestamps();
+            
+            $table->index('order_id');
         });
+    }
     }
 
     public function down()

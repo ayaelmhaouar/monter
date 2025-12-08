@@ -11,45 +11,28 @@ const api = axios.create({
   timeout: 10000, // 10 secondes
 });
 
-// Intercepteur pour ajouter le token aux requêtes
+// Ajouter token aux requêtes si présent
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('token'); // ou 'auth_token' selon ce que tu utilises
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Intercepteur pour gérer les erreurs
+// Gérer les erreurs globalement
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expiré ou invalide
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
+      localStorage.removeItem('token');
       window.location.href = '/login';
     }
-    
-    if (error.response?.status === 403) {
-      // Accès refusé
-      console.error('Accès refusé:', error.response.data);
-    }
-    
-    if (error.response?.status === 500) {
-      // Erreur serveur
-      console.error('Erreur serveur:', error.response.data);
-    }
-
     return Promise.reject(error);
   }
 );
 
-export default api;
+export default api; 

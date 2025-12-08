@@ -1,4 +1,5 @@
-import api from './api';
+
+import api from '/src/services/Api';
 
 export const adminService = {
   // Dashboard

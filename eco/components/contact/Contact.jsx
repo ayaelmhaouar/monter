@@ -125,15 +125,7 @@ const Contact = () => {
             </Card.Body>
           </Card>
 
-          <Card className="mt-4">
-            <Card.Body>
-              <h5>Informations de contact</h5>
-              <p><strong>Email:</strong> contact@montresshop.com</p>
-              <p><strong>Téléphone:</strong> +33 1 23 45 67 89</p>
-              <p><strong>Adresse:</strong> 123 Avenue des Montres, 75001 Paris</p>
-              <p><strong>Horaires:</strong> Lun - Ven: 9h00 - 18h00</p>
-            </Card.Body>
-          </Card>
+         
         </Col>
       </Row>
     </Container>

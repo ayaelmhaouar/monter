@@ -1,5 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-// import api from 'src/services/Api.js';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../src/services/Api';
 
 const AuthContext = createContext();
 
@@ -10,6 +11,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -19,6 +21,7 @@ export const AuthProvider = ({ children }) => {
           setUser(response.data);
         })
         .catch(error => {
+          console.error('Erreur récupération utilisateur:', error);
           localStorage.removeItem('token');
         })
         .finally(() => {
@@ -37,26 +40,37 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.response.data };
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Échec de connexion',
+      };
     }
   };
 
   const register = async (name, email, password, password_confirmation) => {
     try {
-      const response = await api.post('/register', { name, email, password, password_confirmation });
+      const response = await api.post('/register', {
+        name,
+        email,
+        password,
+        password_confirmation,
+      });
       const { access_token, user } = response.data;
       localStorage.setItem('token', access_token);
       setUser(user);
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.response.data };
+      return {
+        success: false,
+        error: error.response?.data?.message || "Échec d'inscription",
+      };
     }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
-    api.post('/logout');
+    navigate('/login');
   };
 
   const value = {
@@ -64,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    loading
+    loading,
   };
 
   return (

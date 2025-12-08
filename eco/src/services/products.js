@@ -1,4 +1,5 @@
-import api from './api';
+import api from '/src/services/Api';
+
 
 // Données mockées garanties
 const mockProducts = [
@@ -8,7 +9,7 @@ const mockProducts = [
     description: "Montre élégante en acier inoxydable avec bracelet en cuir véritable. Parfaite pour les occasions formelles.",
     price: 299.99,
     category: "homme",
-    image: "/public/proiuts/montre1.jpg",
+    image: "montre-femme-1.jpg",
     stock: 15,
     is_active: true
   },
