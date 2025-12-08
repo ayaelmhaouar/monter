@@ -1,29 +1,25 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api';
-
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: 'http://localhost:8000', 
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  timeout: 10000, // 10 secondes
+  timeout: 10000,
 });
 
-// Ajouter token aux requêtes si présent
+// Ajouter token si présent
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // ou 'auth_token' selon ce que tu utilises
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Gérer les erreurs globalement
+// Gestion erreurs globales
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -35,4 +31,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api; 
+export default api;

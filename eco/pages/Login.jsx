@@ -1,87 +1,62 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import { Form, Button, Card, Alert, Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '/src/services/Auth'
+import { Form, Button, Alert, Container, Row, Col, Card } from 'react-bootstrap';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    const response = await authService.login(form.email, form.password);
 
-    const result = await login(formData.email, formData.password);
-
-    if (result.success) {
-      navigate('/');
+    if (response.success) {
+      localStorage.setItem('token', response.data.access_token);
+      navigate('/checkout'); // Redirige après connexion
     } else {
-      setError(result.error);
+      setError(response.error);
     }
-    setLoading(false);
   };
 
   return (
-    <Container className="mt-5">
+    <Container className="my-5">
       <Row className="justify-content-center">
-        <Col md={6} lg={4}>
+        <Col md={6}>
           <Card>
             <Card.Body>
-              <h2 className="text-center mb-4">Connexion</h2>
+              <h3 className="mb-4">Connexion</h3>
               {error && <Alert variant="danger">{error}</Alert>}
-              
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     type="email"
                     name="email"
-                    value={formData.email}
+                    value={form.email}
                     onChange={handleChange}
                     required
-                    placeholder="Entrez votre email"
                   />
                 </Form.Group>
-
                 <Form.Group className="mb-3">
                   <Form.Label>Mot de passe</Form.Label>
                   <Form.Control
                     type="password"
                     name="password"
-                    value={formData.password}
+                    value={form.password}
                     onChange={handleChange}
                     required
-                    placeholder="Entrez votre mot de passe"
                   />
                 </Form.Group>
-
-                <Button 
-                  variant="primary" 
-                  type="submit" 
-                  className="w-100" 
-                  disabled={loading}
-                >
-                  {loading ? 'Connexion...' : 'Se connecter'}
+                <Button type="submit" variant="primary" className="w-100">
+                  Se connecter
                 </Button>
               </Form>
-
-              <div className="text-center mt-3">
-                <Link to="/register">Pas de compte ? S'inscrire</Link>
+              <div className="mt-3 text-center">
+                <small>Pas encore de compte ? <a href="/register">S’inscrire</a></small>
               </div>
             </Card.Body>
           </Card>

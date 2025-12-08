@@ -3,7 +3,7 @@ import api from '/src/services/Api';
 export const orderService = {
   create: async (orderData) => {
     try {
-      const response = await api.post('/orders', orderData);
+      const response = await api.post('/api/orders', orderData);
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -15,7 +15,7 @@ export const orderService = {
 
   getAll: async () => {
     try {
-      const response = await api.get('/orders');
+      const response = await api.get('/api/orders');
       return { success: true, data: response.data };
     } catch (error) {
       return { 
@@ -27,7 +27,7 @@ export const orderService = {
 
   getById: async (id) => {
     try {
-      const response = await api.get(`/orders/${id}`);
+      const response = await api.get(`/api/orders/${id}`);
       return { success: true, data: response.data };
     } catch (error) {
       return { 

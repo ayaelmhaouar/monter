@@ -4,7 +4,7 @@ export const contactService = {
   // Envoyer un message de contact
   send: async (contactData) => {
     try {
-      const response = await api.post('/contact', contactData);
+      const response = await api.post('/api/contact', contactData);
       return { 
         success: true, 
         data: response.data.data || response.data,
@@ -22,7 +22,7 @@ export const contactService = {
   // Récupérer les messages de contact (admin)
   getAll: async () => {
     try {
-      const response = await api.get('/admin/contacts');
+      const response = await api.get('/api/admin/contacts');
       return { 
         success: true, 
         data: response.data.data || response.data 
@@ -38,7 +38,7 @@ export const contactService = {
   // Mettre à jour le statut d'un message (admin)
   updateStatus: async (id, statusData) => {
     try {
-      const response = await api.put(`/admin/contacts/${id}/status`, statusData);
+      const response = await api.put(`/api/admin/contacts/${id}/status`, statusData);
       return { 
         success: true, 
         data: response.data.data || response.data 
@@ -54,7 +54,7 @@ export const contactService = {
   // Supprimer un message (admin)
   delete: async (id) => {
     try {
-      const response = await api.delete(`/admin/contacts/${id}`);
+      const response = await api.delete(`/api/admin/contacts/${id}`);
       return { 
         success: true, 
         data: response.data 

@@ -63,7 +63,7 @@ const ProductList = () => {
 
     // Filtre par catégorie
     if (selectedCategory !== 'tous') {
-      filtered = filtered.filter(product => product.category === selectedCategory);
+      filtered = filtered.filter(product => product.category === selectedCategory);///même catégorie que
     }
 
     // Filtre par recherche

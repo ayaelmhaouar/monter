@@ -4,7 +4,7 @@ export const authService = {
   // Connexion
   login: async (email, password) => {
     try {
-      const response = await api.post('/login', { email, password });
+      const response = await api.post('/api/login', { email, password });
       return { 
         success: true, 
         data: response.data 
@@ -21,7 +21,7 @@ export const authService = {
   // Inscription
   register: async (userData) => {
     try {
-      const response = await api.post('/register', userData);
+      const response = await api.post('/api/register', userData);
       return { 
         success: true, 
         data: response.data 
@@ -38,7 +38,7 @@ export const authService = {
   // Déconnexion
   logout: async () => {
     try {
-      const response = await api.post('/logout');
+      const response = await api.post('/api/logout');
       return { 
         success: true, 
         data: response.data 
@@ -54,7 +54,7 @@ export const authService = {
   // Récupérer le profil utilisateur
   getProfile: async () => {
     try {
-      const response = await api.get('/user');
+      const response = await api.get('/api/user');
       return { 
         success: true, 
         data: response.data 
@@ -70,7 +70,7 @@ export const authService = {
   // Mettre à jour le profil
   updateProfile: async (userData) => {
     try {
-      const response = await api.put('/user/profile', userData);
+      const response = await api.put('/api/user/profile', userData);
       return { 
         success: true, 
         data: response.data 
@@ -86,7 +86,7 @@ export const authService = {
   // Changer le mot de passe
   changePassword: async (passwordData) => {
     try {
-      const response = await api.put('/user/password', passwordData);
+      const response = await api.put('/api/user/password', passwordData);
       return { 
         success: true, 
         data: response.data 

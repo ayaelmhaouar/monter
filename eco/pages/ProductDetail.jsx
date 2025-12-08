@@ -1,8 +1,8 @@
-// src/pages/ProductDetailSimple.jsx
+
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 
-// Utilise les mêmes produits que dans ProductListSimple
+// Utilise les mêmes produits que dans ProductList
 const allProducts = [
   {
       id: 1,name: "Montre Classique Homme",  price: 299.99, image: "/public/f.jpg", category: "femme",brand: "TimeLux"

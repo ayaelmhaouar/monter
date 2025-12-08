@@ -6,7 +6,7 @@ import { CartProvider } from '../context/CartContext';
 
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import Contact from '../components/contact/Contact';
+
 
 import Home from '../pages/Home';
 import Products from '../pages/Products';
@@ -56,7 +56,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
-                <Route path="/contact" element={<Contact />} />
+               
 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminLayout />}>

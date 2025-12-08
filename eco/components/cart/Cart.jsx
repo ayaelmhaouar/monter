@@ -2,6 +2,7 @@ import React from 'react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Table, Alert } from 'react-bootstrap';
 import CartItem from './CartItem';
 
@@ -123,21 +124,15 @@ const Cart = () => {
                 </strong>
               </div>
 
-              {!user && (
-                <Alert variant="warning" className="small">
-                  🔒 Vous devez être connecté pour passer commande
-                </Alert>
-              )}
+             
 
-              <Button 
-                variant="primary" 
-                size="lg" 
-                className="w-100"
-                onClick={handleCheckout}
-                disabled={!user}
-              >
-                {user ? 'Passer la commande' : 'Se connecter pour commander'}
-              </Button>
+           <Link 
+  to={user ? "/checkout" : "/login"} 
+  className="btn btn-primary btn-lg w-100"
+>
+  {user ? "Passer la commande" : "Se connecter pour commander"}
+</Link>
+
 
               {user && (
                 <div className="text-center mt-2">

@@ -26,7 +26,7 @@ const NavigationBar = () => {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Accueil</Nav.Link>
             <Nav.Link as={Link} to="/products">Boutique</Nav.Link>
-            <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
+         
           </Nav>
 
           <Nav>

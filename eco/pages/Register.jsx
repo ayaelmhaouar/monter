@@ -1,67 +1,68 @@
-import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate, Link } from "react-router-dom";
-import { Form, Button, Card, Alert, Container, Row, Col } from "react-bootstrap";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+import { authService } from '/src/services/Auth'
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+import { Form, Button, Alert, Card, Container, Row, Col } from 'react-bootstrap';
 
-  const { register } = useAuth();
+const Register = () => {
   const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+  });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  async function handleSubmit(e) {
+  // Mettre à jour les champs du formulaire
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // Soumettre le formulaire
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+    setError('');
+    setSuccess('');
 
-    if (password !== passwordConfirmation) {
-      setError("Les mots de passe ne correspondent pas");
-      setLoading(false);
+    if (form.password !== form.password_confirmation) {
+      setError("Les mots de passe ne correspondent pas !");
       return;
     }
 
-    const result = await register({
-      name,
-      email,
-      password,
-      password_confirmation: passwordConfirmation
-    });
+    const response = await authService.register(form);
 
-    if (result.success) {
-      navigate("/");
+    if (response.success) {
+      setSuccess("Inscription réussie ! Vous êtes maintenant connecté.");
+      localStorage.setItem('token', response.data.access_token);
+      navigate('/checkout'); // redirige après inscription
     } else {
-      setError(result.error);
+      setError(response.error || 'Erreur lors de l’inscription');
     }
-
-    setLoading(false);
-  }
+  };
 
   return (
-    <Container className="mt-5">
+    <Container className="my-5">
       <Row className="justify-content-center">
-        <Col md={6} lg={4}>
+        <Col md={6}>
           <Card>
             <Card.Body>
-              <h2 className="text-center mb-4">Inscription</h2>
-{/* Si error n’est pas vide → afficher un message rouge. */}
+              <h3 className="mb-4">Créer un compte</h3>
+
               {error && <Alert variant="danger">{error}</Alert>}
+              {success && <Alert variant="success">{success}</Alert>}
 
               <Form onSubmit={handleSubmit}>
-
                 <Form.Group className="mb-3">
                   <Form.Label>Nom complet</Form.Label>
                   <Form.Control
                     type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
                     required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Entrez votre nom"
                   />
                 </Form.Group>
 
@@ -69,10 +70,10 @@ export default function Register() {
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Entrez votre email"
                   />
                 </Form.Group>
 
@@ -80,55 +81,40 @@ export default function Register() {
                   <Form.Label>Mot de passe</Form.Label>
                   <Form.Control
                     type="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Entrez votre mot de passe"
                   />
                 </Form.Group>
-
-                {password.length > 0 && password.length < 4 && (
-                  <Alert variant="warning" className="py-1">
-                    Le mot de passe doit contenir au moins 4 caractères
-                  </Alert>
-                )}
 
                 <Form.Group className="mb-3">
                   <Form.Label>Confirmation du mot de passe</Form.Label>
                   <Form.Control
                     type="password"
+                    name="password_confirmation"
+                    value={form.password_confirmation}
+                    onChange={handleChange}
                     required
-                    value={passwordConfirmation}
-                    onChange={(e) => setPasswordConfirmation(e.target.value)}
-                    placeholder="Confirmez votre mot de passe"
                   />
                 </Form.Group>
 
-                {passwordConfirmation.length > 0 &&
-                  password !== passwordConfirmation && (
-                    <Alert variant="warning" className="py-1">
-                      La confirmation ne correspond pas
-                    </Alert>
-                )}
-
-                <Button
-                  variant="primary"
-                  type="submit"
-                  className="w-100"
-                  disabled={loading}
-                >
-                  {loading ? "Inscription..." : "S'inscrire"}
+                <Button type="submit" variant="primary" className="w-100">
+                  S'inscrire
                 </Button>
               </Form>
 
-              <div className="text-center mt-3">
-                <Link to="/login">Déjà un compte ? Se connecter</Link>
+              <div className="mt-3 text-center">
+                <small>
+                  Déjà un compte ? <a href="/login">Connectez-vous</a>
+                </small>
               </div>
-
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </Container>
   );
-}
+};
+
+export default Register;
